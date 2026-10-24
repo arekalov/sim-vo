@@ -10,6 +10,9 @@ namespace SimVO.Targets
         public TargetSurface surface = TargetSurface.Paper;
         public AudioSource audioSource;
         public int maxHoles = 40;
+        public bool showHoles = true;
+        /// <summary>While false (edge-on in cover mode, wrong body position) hits leave marks but do not score.</summary>
+        public bool Armed { get; set; } = true;
 
         public event Action<Target, int> HitRegistered;
 
@@ -20,22 +23,33 @@ namespace SimVO.Targets
         public void RegisterHit(Vector3 point, Vector3 normal, Vector3 direction)
         {
             var points = Evaluate(point, out var offset);
-            FxLibrary.Instance?.SpawnHole(point, normal, transform, maxHoles);
-            FxLibrary.Instance?.ShowPoints(point, points);
+            if (showHoles) FxLibrary.Instance?.SpawnHole(point, normal, transform, maxHoles);
+            OnHitVisual(point, normal, direction, points);
             PlayHitSound(points);
+            if (!Armed) return;
+            var counted = GameSession.Instance != null && GameSession.Instance.State == SessionState.Running;
+            if (counted) FxLibrary.Instance?.ShowPoints(point, points);
             GameSession.Instance?.RegisterHit(points, offset, point);
             HitRegistered?.Invoke(this, points);
         }
 
-        void PlayHitSound(int points)
+        protected virtual void OnHitVisual(Vector3 point, Vector3 normal, Vector3 direction, int points) { }
+
+        protected virtual void PlayHitSound(int points)
         {
             if (audioSource == null) return;
-            if (points >= MaxPoints)
+            if (points >= MaxPoints && Armed)
             {
-                audioSource.PlayOneShot(ProceduralSfx.Bullseye);
+                Sfx.Play(audioSource, SfxLibrary.Bullseye);
                 return;
             }
-            audioSource.PlayOneShot(surface == TargetSurface.Metal ? ProceduralSfx.MetalHit : ProceduralSfx.PaperHit);
+            var clip = surface switch
+            {
+                TargetSurface.Metal => SfxLibrary.MetalHit,
+                TargetSurface.Hologram => ProceduralSfx.Beep,
+                _ => SfxLibrary.PaperHit,
+            };
+            Sfx.Play(audioSource, clip);
         }
     }
 }

@@ -282,6 +282,7 @@ GameObject:
   - component: {fileID: 3667289388658422535}
   - component: {fileID: 4824913098847993957}
   - component: {fileID: 8404982219155646483}
+  - component: {fileID: 189590742000248187}
   - component: {fileID: 1360999451342156315}
   - component: {fileID: 1424631091867648949}
   m_Layer: 0
@@ -403,6 +404,28 @@ MonoBehaviour:
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
   m_ParentInteractableObject: {fileID: 0}
+--- !u!114 &189590742000248187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7682998160492892460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115f1a2a50d85cd4b9d6dad4c95622be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Filtering.XRPokeFilter
+  m_Interactable: {fileID: 8404982219155646483}
+  m_PokeCollider: {fileID: 4824913098847993957}
+  m_PokeConfiguration:
+    m_UseConstant: 1
+    m_ConstantValue:
+      m_PokeDirection: 3
+      m_InteractionDepthOffset: 0
+      m_EnablePokeAngleThreshold: 1
+      m_PokeAngleThreshold: 45
+    m_Variable: {fileID: 0}
 --- !u!114 &1360999451342156315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,7 +440,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimVO.UI.PanelButton
   label: {fileID: 2764498029302509359}
   cap: {fileID: 7035708686532824684}
-  pressDepth: 0.008
+  pressDirection: {x: 0, y: -1, z: 0}
+  pressDepth: 0.006
   audioSource: {fileID: 1424631091867648949}
   onPress:
     m_PersistentCalls:

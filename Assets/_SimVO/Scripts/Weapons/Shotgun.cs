@@ -15,10 +15,11 @@ namespace SimVO.Weapons
         public int ShellsLoaded => shellsLoaded;
         public override bool HasAmmo => shellsLoaded > 0;
         public override int RoundsLoaded => shellsLoaded;
-        protected override AudioClip ShotClip => SfxLibrary.ShotgunShot;
+        protected override AudioClip ShotClip => OwnClip ?? SfxLibrary.ShotgunShot;
 
         void Reset()
         {
+            requiresCockingAfterShot = true;
             displayName = "Дробовик";
             muzzleVelocity = 400f;
             minShotInterval = 0.7f;
@@ -51,9 +52,12 @@ namespace SimVO.Weapons
 
         public override void QuickReload()
         {
-            if (shellsLoaded >= tubeCapacity) return;
-            shellsLoaded = tubeCapacity;
-            Play(SfxLibrary.ShellIn);
+            if (shellsLoaded < tubeCapacity)
+            {
+                shellsLoaded = tubeCapacity;
+                Play(SfxLibrary.ShellIn);
+            }
+            Cock();
         }
     }
 }

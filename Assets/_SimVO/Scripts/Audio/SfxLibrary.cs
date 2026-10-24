@@ -20,6 +20,8 @@ namespace SimVO.Audio
         public AudioClip[] buttonClick;
         public AudioClip[] carrierMove;
         public AudioClip[] targetFlip;
+        public AudioClip[] cockBack;
+        public AudioClip[] cockForward;
 
         void Awake() => Instance = this;
         void OnDestroy() { if (Instance == this) Instance = null; }
@@ -44,5 +46,7 @@ namespace SimVO.Audio
         public static AudioClip ButtonClick => Pick(Instance?.buttonClick, ProceduralSfx.ButtonClick);
         public static AudioClip CarrierMove => Pick(Instance?.carrierMove, ProceduralSfx.MotorHum);
         public static AudioClip TargetFlip => Pick(Instance?.targetFlip, ProceduralSfx.MagOut);
+        public static AudioClip CockBack => Pick(Instance?.cockBack, ProceduralSfx.MagOut);
+        public static AudioClip CockForward => Pick(Instance?.cockForward, ProceduralSfx.MagIn);
     }
 }

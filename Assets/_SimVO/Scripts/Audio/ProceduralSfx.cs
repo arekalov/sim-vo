@@ -51,6 +51,15 @@ namespace SimVO.Audio
         public static AudioClip MotorHum => Get("motor", 1.0f, (t, r) =>
             (Mathf.Sin(2f * Mathf.PI * 55f * t) * 0.5f + Mathf.Sin(2f * Mathf.PI * 110f * t) * 0.25f + Noise(r) * 0.05f) * 0.35f);
 
+        /// <summary>Twelve-second ambient pad: slow A-minor chord swell with a soft noise wash.</summary>
+        public static AudioClip AmbientPad => Get("ambient", 12f, (t, r) =>
+        {
+            var swell = 0.5f - 0.5f * Mathf.Cos(2f * Mathf.PI * t / 12f);
+            var chord = Mathf.Sin(2f * Mathf.PI * 110f * t) + 0.8f * Mathf.Sin(2f * Mathf.PI * 130.8f * t) + 0.7f * Mathf.Sin(2f * Mathf.PI * 164.8f * t) + 0.4f * Mathf.Sin(2f * Mathf.PI * 220f * t);
+            var shimmer = 0.15f * Mathf.Sin(2f * Mathf.PI * 329.6f * t) * (0.5f + 0.5f * Mathf.Sin(2f * Mathf.PI * t / 4f));
+            return (chord * 0.12f + shimmer) * (0.35f + 0.65f * swell) + Noise(r) * 0.008f;
+        });
+
         public static AudioClip ButtonClick => Get("button", 0.05f, (t, r) =>
             Mathf.Sin(2f * Mathf.PI * 1200f * t) * Decay(t, 80f) * 0.4f);
 

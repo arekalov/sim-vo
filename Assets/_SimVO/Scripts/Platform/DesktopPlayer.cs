@@ -18,6 +18,7 @@ namespace SimVO.Platform
         public Camera cam;
         public Transform handAnchor;
         public WeaponStand stand;
+        public GameMenu menu;
         public float moveSpeed = 2.2f;
         public float lookSensitivity = 0.08f;
         public float standingEyeHeight = 1.65f;
@@ -52,7 +53,6 @@ namespace SimVO.Platform
             var mouse = Mouse.current;
             if (keyboard == null || mouse == null) return;
 
-            if (keyboard.escapeKey.wasPressedThisFrame) LockCursor(Cursor.lockState != CursorLockMode.Locked);
             var locked = Cursor.lockState == CursorLockMode.Locked;
             if (!locked && !Application.isEditor)
             {
@@ -84,13 +84,26 @@ namespace SimVO.Platform
             if (keyboard.digit1Key.wasPressedThisFrame) TakeWeapon(0);
             if (keyboard.digit2Key.wasPressedThisFrame) TakeWeapon(1);
             if (keyboard.digit3Key.wasPressedThisFrame) TakeWeapon(2);
+            if (keyboard.digit4Key.wasPressedThisFrame) TakeWeapon(3);
+            if (keyboard.digit5Key.wasPressedThisFrame) TakeWeapon(4);
+            if (keyboard.digit6Key.wasPressedThisFrame) TakeWeapon(5);
+            if (keyboard.digit7Key.wasPressedThisFrame) TakeWeapon(6);
             if (keyboard.gKey.wasPressedThisFrame) DropWeapon();
 
             if (weapon != null) ConvergeOnCrosshair();
-            if (mouse.leftButton.wasPressedThisFrame && weapon != null) weapon.TryFire();
-            if (keyboard.rKey.wasPressedThisFrame && weapon != null) weapon.QuickReload();
+            var menuOpen = menu != null && menu.IsOpen;
+            if (mouse.leftButton.wasPressedThisFrame)
+            {
+                if (menuOpen) Interact();
+                else if (weapon != null) weapon.TryFire();
+            }
+            if (weapon != null) weapon.TriggerHeld = !menuOpen && mouse.leftButton.isPressed;
+            if (keyboard.rKey.wasPressedThisFrame && weapon != null && !menuOpen) weapon.QuickReload();
+            if (keyboard.fKey.wasPressedThisFrame && weapon != null && !menuOpen) weapon.Cock();
             if (keyboard.eKey.wasPressedThisFrame) Interact();
         }
+
+        public void SetPosition(BodyPosition next) => ApplyPosition(next);
 
         void ApplyPosition(BodyPosition next)
         {
@@ -134,6 +147,7 @@ namespace SimVO.Platform
         {
             if (weapon == null) return;
             weapon.Holder = null;
+            weapon.TriggerHeld = false;
             var grab = weapon.GetComponent<XRGrabInteractable>();
             if (grab != null) grab.enabled = true;
             var body = weapon.GetComponent<Rigidbody>();

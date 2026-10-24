@@ -24,8 +24,15 @@ namespace SimVO.Weapons
             if (shotgun.LoadShell())
             {
                 interactionManager.SelectExit((IXRSelectInteractor)this, (IXRSelectInteractable)shell.Grab);
-                Destroy(shell.gameObject);
+                StartCoroutine(Consume(shell.gameObject));
             }
+        }
+
+        /// <summary>Let the interaction manager finish this frame before the shell disappears.</summary>
+        System.Collections.IEnumerator Consume(GameObject shell)
+        {
+            yield return null;
+            if (shell != null) Destroy(shell);
         }
     }
 }

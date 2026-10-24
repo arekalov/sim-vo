@@ -164,6 +164,7 @@ MonoBehaviour:
   surface: 0
   audioSource: {fileID: 420057244770135645}
   maxHoles: 40
+  showHoles: 1
 --- !u!82 &420057244770135645
 AudioSource:
   m_ObjectHideFlags: 0

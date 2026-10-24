@@ -47,11 +47,13 @@ namespace SimVO.Targets
             {
                 audioSource.clip = clip;
                 audioSource.loop = true;
+                audioSource.volume = 0.35f * Sfx.Effects;
                 audioSource.Play();
             }
             var t = 0f;
             while (t < duration)
             {
+                while (Core.GameSession.Instance != null && Core.GameSession.Instance.Paused) yield return null;
                 t += Time.deltaTime;
                 var k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / duration));
                 trolley.localPosition = new Vector3(0f, 0f, Mathf.Lerp(start, distance, k));
@@ -73,10 +75,21 @@ namespace SimVO.Targets
                 whileEdgeOn?.Invoke();
                 yield break;
             }
-            if (audioSource != null) audioSource.PlayOneShot(SfxLibrary.TargetFlip);
+            Sfx.Play(audioSource, SfxLibrary.TargetFlip);
             yield return Rotate(0f, 90f);
             whileEdgeOn?.Invoke();
             yield return Rotate(90f, 0f);
+        }
+
+        /// <summary>Turns the frame to an angle: 0 faces the shooter, 90 is edge-on.</summary>
+        public IEnumerator TurnTo(float angle)
+        {
+            if (frame == null) yield break;
+            var from = frame.localEulerAngles.y;
+            if (from > 180f) from -= 360f;
+            if (Mathf.Abs(from - angle) < 0.5f) yield break;
+            Sfx.Play(audioSource, SfxLibrary.TargetFlip, 0.6f);
+            yield return Rotate(from, angle);
         }
 
         IEnumerator Rotate(float from, float to)
@@ -84,6 +97,7 @@ namespace SimVO.Targets
             var t = 0f;
             while (t < flipDuration)
             {
+                while (Core.GameSession.Instance != null && Core.GameSession.Instance.Paused) yield return null;
                 t += Time.deltaTime;
                 frame.localRotation = Quaternion.Euler(0f, Mathf.Lerp(from, to, Mathf.SmoothStep(0f, 1f, t / flipDuration)), 0f);
                 yield return null;

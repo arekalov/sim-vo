@@ -8,13 +8,14 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 namespace SimVO.UI
 {
-    /// <summary>Physical button on the control panel with a text label.</summary>
+    /// <summary>Physical button or knob with a text label. VR poke/ray selects it, desktop presses it with E or a click.</summary>
     [RequireComponent(typeof(XRSimpleInteractable))]
     public class PanelButton : MonoBehaviour, IPressable
     {
         public TMP_Text label;
         public Transform cap;
-        public float pressDepth = 0.008f;
+        public Vector3 pressDirection = Vector3.down;
+        public float pressDepth = 0.006f;
         public AudioSource audioSource;
         public UnityEvent onPress = new UnityEvent();
 
@@ -40,8 +41,8 @@ namespace SimVO.UI
 
         public void Press()
         {
-            if (audioSource != null) audioSource.PlayOneShot(ProceduralSfx.ButtonClick);
-            if (cap != null)
+            Sfx.Play(audioSource, SfxLibrary.ButtonClick);
+            if (cap != null && gameObject.activeInHierarchy)
             {
                 if (animation != null) StopCoroutine(animation);
                 animation = StartCoroutine(Animate());
@@ -51,8 +52,8 @@ namespace SimVO.UI
 
         IEnumerator Animate()
         {
-            cap.localPosition = capRest - Vector3.up * pressDepth;
-            yield return new WaitForSeconds(0.12f);
+            cap.localPosition = capRest + pressDirection.normalized * pressDepth;
+            yield return new WaitForSecondsRealtime(0.12f);
             cap.localPosition = capRest;
             animation = null;
         }

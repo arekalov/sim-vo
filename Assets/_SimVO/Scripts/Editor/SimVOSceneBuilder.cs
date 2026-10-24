@@ -29,6 +29,7 @@ namespace SimVO.EditorTools
         static readonly float[] DecorDistances = { 7f, 12f, 0f, 4f, 15f };
 
         static float LaneX(int lane) => (lane - PlayerLane) * LaneWidth;
+        static Transform PlayerBench;
         static float RoomZCentre => (RoomMinZ + RoomMaxZ) * 0.5f;
         static float RoomLength => RoomMaxZ - RoomMinZ;
 
@@ -73,6 +74,8 @@ namespace SimVO.EditorTools
             sfx.shellIn = Clips("impactPlate_light_000");
             sfx.buttonClick = Clips("Button_22_click");
             sfx.targetFlip = Clips("impactPlank_medium_000");
+            sfx.cockBack = Clips("impactMetal_light_001");
+            sfx.cockForward = Clips("impactMetal_light_002", "impactMetal_medium_000");
 
             var environment = new GameObject("Environment");
             var floorMarker = BuildRoom(environment.transform);
@@ -94,7 +97,19 @@ namespace SimVO.EditorTools
                     spawner.carrier = component;
                     spawner.ringTargetPrefab = RingTargetPrefab.GetComponent<RingTarget>();
                     spawner.silhouetteTargetPrefab = SilhouetteTargetPrefab.GetComponent<SilhouetteTarget>();
+                    spawner.gongTargetPrefab = GongTargetPrefab.GetComponent<GongTarget>();
+                    spawner.hologramTargetPrefab = HologramTargetPrefab.GetComponent<HologramTarget>();
                     spawner.distances = new System.Collections.Generic.List<float>(Distances);
+                    var thrower = Instance(ClayThrowerPrefab, "ClayThrower", new Vector3(LaneX(lane) - 0.75f, 0f, 11.5f), Quaternion.Euler(0f, 10f, 0f));
+                    thrower.transform.SetParent(lanes.transform, true);
+                    spawner.clayThrower = thrower.GetComponent<ClayThrower>();
+                    var gallery = Instance(DuckGalleryPrefab, "DuckGallery", new Vector3(LaneX(lane), 1.05f, 7f));
+                    gallery.transform.SetParent(lanes.transform, true);
+                    spawner.duckGallery = gallery.GetComponent<DuckGallery>();
+                    gallery.SetActive(false);
+                    var barricade = Instance(BarricadePrefab, "CoverBarricade", new Vector3(LaneX(lane), 0f, 1.05f));
+                    barricade.transform.SetParent(lanes.transform, true);
+                    barricade.GetComponent<CoverBarricade>().spawner = spawner;
                     foreach (var d in Distances) DistanceSign(lanes.transform, LaneX(lane), d);
                 }
                 else
@@ -114,17 +129,27 @@ namespace SimVO.EditorTools
             var stand = wall.GetComponent<WeaponStand>();
 
             var benchY = 0.975f;
-            var panel = Instance(ControlPanelPrefab, "ControlPanel", new Vector3(0.42f, benchY + 0.03f, 0.62f), Quaternion.Euler(-20f, 0f, 0f));
-            Instance(DispenserPrefab, "MagazineDispenser", new Vector3(-0.3f, benchY, 0.6f));
-            Instance(ShellBoxPrefab, "ShellBox", new Vector3(-0.52f, benchY, 0.6f));
-            InstantiateModel(PolyHavenModel("ammo_box"), null, new Vector3(-0.1f, benchY, 0.72f), new Vector3(0f, 20f, 0f)).name = "AmmoBox";
+            var panel = Instance(ControlPanelPrefab, "ControlPanel", new Vector3(0.6f, benchY + 0.03f, 0.66f), Quaternion.Euler(-18f, 0f, 0f));
+            panel.transform.localScale = Vector3.one * 0.8f;
+            panel.transform.SetParent(PlayerBench, true);
+            Instance(DispenserPrefab, "MagazineDispenser", new Vector3(0.36f, benchY, 0.42f)).transform.SetParent(PlayerBench, true);
+            Instance(ShellBoxPrefab, "ShellBox", new Vector3(0.56f, benchY, 0.4f)).transform.SetParent(PlayerBench, true);
+            var ammoBox = InstantiateModel(PolyHavenModel("ammo_box"), null, new Vector3(0.8f, benchY, 0.45f), new Vector3(0f, 35f, 0f));
+            ammoBox.name = "AmmoBox";
+            ammoBox.transform.SetParent(PlayerBench, true);
 
-            var scoreboard = Instance(ScoreboardPrefab, "Scoreboard", new Vector3(-0.98f, 2.42f, 1.0f));
-            scoreboard.transform.localScale = Vector3.one * 0.55f;
+            var scoreboard = Instance(ScoreboardPrefab, "Scoreboard", new Vector3(0f, 2.52f, 0.64f), Quaternion.Euler(-18f, 0f, 0f));
+            scoreboard.transform.localScale = Vector3.one * 0.7f;
+
+            var menu = Instance(MenuPanelPrefab, "MenuPanel", new Vector3(0f, 1.55f, 0.98f));
+            var gameMenu = menu.GetComponent<GameMenu>();
+            managers.AddComponent<MenuInput>().menu = gameMenu;
+            managers.AddComponent<MusicPlayer>();
 
             var xrRig = BuildXRRig(floorMarker);
             var desktopRig = Instance(DesktopRigPrefab, "DesktopRig", new Vector3(0f, 0f, -0.45f));
             desktopRig.GetComponent<DesktopPlayer>().stand = stand;
+            desktopRig.GetComponent<DesktopPlayer>().menu = gameMenu;
             xrRig.SetActive(false);
             desktopRig.SetActive(false);
             var bootstrap = managers.AddComponent<PlatformBootstrap>();
@@ -180,7 +205,7 @@ namespace SimVO.EditorTools
             marker.name = "FloorMarker";
             marker.transform.SetParent(room, false);
             marker.transform.localPosition = new Vector3(0f, 0.004f, -0.45f);
-            marker.transform.localScale = new Vector3(0.8f, 0.004f, 0.8f);
+            marker.transform.localScale = new Vector3(0.7f, 0.004f, 0.7f);
             Object.DestroyImmediate(marker.GetComponent<Collider>());
             var renderer = marker.GetComponent<Renderer>();
             renderer.sharedMaterial = Marker;
@@ -192,11 +217,31 @@ namespace SimVO.EditorTools
             var x = LaneX(lane);
             var booth = new GameObject($"Booth{lane + 1}").transform;
             booth.SetParent(parent, false);
-            Box("BenchTop", booth, new Vector3(x, 0.95f, 0.6f), new Vector3(LaneWidth - 0.3f, 0.05f, 0.6f), WoodTable);
-            Box("BenchApron", booth, new Vector3(x, 0.89f, 0.31f), new Vector3(LaneWidth - 0.3f, 0.1f, 0.03f), Rack, default, false);
-            Box("LegLeft", booth, new Vector3(x - (LaneWidth - 0.3f) / 2f + 0.04f, 0.46f, 0.6f), new Vector3(0.05f, 0.92f, 0.55f), Rack);
-            Box("LegRight", booth, new Vector3(x + (LaneWidth - 0.3f) / 2f - 0.04f, 0.46f, 0.6f), new Vector3(0.05f, 0.92f, 0.55f), Rack);
-            Box("Shelf", booth, new Vector3(x, 0.45f, 0.65f), new Vector3(LaneWidth - 0.4f, 0.03f, 0.45f), Plywood, default, false);
+            var player = lane == PlayerLane;
+            var benchRoot = booth;
+            if (player)
+            {
+                var bench = new GameObject("PlayerBench");
+                bench.transform.SetParent(booth, false);
+                bench.AddComponent<AdaptiveBench>();
+                benchRoot = bench.transform;
+                PlayerBench = benchRoot;
+            }
+            // The player's booth keeps the bench on the right and leaves the left half free for kneeling and prone.
+            var benchWidth = player ? 0.68f : LaneWidth - 0.3f;
+            var benchX = player ? x + 0.56f : x;
+            Box("BenchTop", benchRoot, new Vector3(benchX, 0.95f, 0.6f), new Vector3(benchWidth, 0.05f, 0.6f), WoodTable).isStatic = !player;
+            Box("BenchApron", benchRoot, new Vector3(benchX, 0.89f, 0.31f), new Vector3(benchWidth, 0.1f, 0.03f), Rack, default, false).isStatic = !player;
+            Box("LegLeft", benchRoot, new Vector3(benchX - benchWidth / 2f + 0.04f, 0.46f, 0.6f), new Vector3(0.05f, 0.92f, 0.55f), Rack).isStatic = !player;
+            Box("LegRight", benchRoot, new Vector3(benchX + benchWidth / 2f - 0.04f, 0.46f, 0.6f), new Vector3(0.05f, 0.92f, 0.55f), Rack).isStatic = !player;
+            Box("Shelf", benchRoot, new Vector3(benchX, 0.45f, 0.65f), new Vector3(benchWidth - 0.1f, 0.03f, 0.45f), Plywood, default, false).isStatic = !player;
+            if (player)
+            {
+                Box("ShootingMat", booth, new Vector3(x - 0.42f, 0.012f, -0.1f), new Vector3(0.8f, 0.024f, 1.9f), Mat, default, false);
+                Box("Sandbag", booth, new Vector3(x - 0.42f, 0.09f, 0.55f), new Vector3(0.42f, 0.16f, 0.22f), Sandbag, default, false);
+                Box("SandbagTop", booth, new Vector3(x - 0.42f, 0.2f, 0.55f), new Vector3(0.3f, 0.08f, 0.18f), Sandbag, new Vector3(0f, 12f, 0f), false);
+                Text("MatLabel", booth, new Vector3(x - 0.42f, 0.03f, -0.85f), "ЛЁЖА · С КОЛЕНА", 0.35f, new Vector2(0.8f, 0.1f), new Vector3(90f, 0f, 0f), new Color(0.9f, 0.85f, 0.5f));
+            }
 
             var sign = Box("Sign", booth, new Vector3(x, 2.45f, -0.5f), new Vector3(0.55f, 0.3f, 0.03f), Sign, default, false);
             Text("SignText", booth, new Vector3(x, 2.45f, -0.517f), $"<b>{lane + 1}</b>\n<size=50%>ДОРОЖКА</size>", 0.9f, new Vector2(0.5f, 0.3f), default, new Color(0.1f, 0.1f, 0.12f));
@@ -277,6 +322,15 @@ namespace SimVO.EditorTools
             rig.layer = SimVOLayers.IgnoreRaycast;
             var locomotion = rig.transform.Find("Locomotion");
             if (locomotion != null) locomotion.gameObject.SetActive(false);
+            // The starter rig only interacts with the Default layer; weapons live on their own layer so bullets ignore them.
+            var weaponBit = 1 << SimVOLayers.Weapon;
+            foreach (var caster in rig.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Casters.SphereInteractionCaster>(true))
+                caster.physicsLayerMask = caster.physicsLayerMask | weaponBit;
+            foreach (var caster in rig.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Casters.CurveInteractionCaster>(true))
+                caster.raycastMask = caster.raycastMask | weaponBit;
+            foreach (var interactor in rig.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.NearFarInteractor>(true))
+                interactor.farAttachMode = UnityEngine.XR.Interaction.Toolkit.Attachment.InteractorFarAttachMode.Near;
+
             var origin = rig.GetComponent<XROrigin>();
             var tracker = rig.AddComponent<BodyPositionTracker>();
             tracker.head = origin != null && origin.Camera != null ? origin.Camera.transform : rig.transform;

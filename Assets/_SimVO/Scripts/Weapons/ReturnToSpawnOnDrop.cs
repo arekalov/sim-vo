@@ -30,6 +30,7 @@ namespace SimVO.Weapons
 
         void OnDropped(SelectExitEventArgs args)
         {
+            if (grab.isSelected) return; // the other hand still holds it
             var body = GetComponent<Rigidbody>();
             if (body != null) body.isKinematic = false;
             if (pending != null) StopCoroutine(pending);

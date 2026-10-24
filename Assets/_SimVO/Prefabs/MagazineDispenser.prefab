@@ -434,6 +434,7 @@ MonoBehaviour:
   socket: {fileID: 212805995844215637}
   itemPrefab: {fileID: 5173825022471865011, guid: ceaa79025c3eb46b3ae11ed1627315b3, type: 3}
   respawnDelay: 0.5
+  matchHeldWeapon: 1
 --- !u!1 &9204405551913954883
 GameObject:
   m_ObjectHideFlags: 0

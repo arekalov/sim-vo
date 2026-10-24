@@ -29,6 +29,7 @@ namespace SimVO.Weapons
         void OnEnable()
         {
             grab.activated.AddListener(OnActivated);
+            grab.deactivated.AddListener(OnDeactivated);
             grab.selectEntered.AddListener(OnSelectEntered);
             grab.selectExited.AddListener(OnSelectExited);
         }
@@ -36,6 +37,7 @@ namespace SimVO.Weapons
         void OnDisable()
         {
             grab.activated.RemoveListener(OnActivated);
+            grab.deactivated.RemoveListener(OnDeactivated);
             grab.selectEntered.RemoveListener(OnSelectEntered);
             grab.selectExited.RemoveListener(OnSelectExited);
             ReleaseEject();
@@ -43,11 +45,18 @@ namespace SimVO.Weapons
 
         void OnActivated(ActivateEventArgs args)
         {
+            weapon.TriggerHeld = true;
             weapon.TryFire();
+        }
+
+        void OnDeactivated(DeactivateEventArgs args)
+        {
+            weapon.TriggerHeld = false;
         }
 
         void OnSelectEntered(SelectEnterEventArgs args)
         {
+            Debug.Log($"SimVO: grab {weapon.displayName} by {args.interactorObject.transform.name} ({args.interactorObject.handedness})");
             if (args.interactorObject is XRSocketInteractor) return;
             haptics = args.interactorObject.transform.GetComponentInParent<HapticImpulsePlayer>();
             weapon.Holder = this;
@@ -56,8 +65,10 @@ namespace SimVO.Weapons
 
         void OnSelectExited(SelectExitEventArgs args)
         {
+            Debug.Log($"SimVO: release {weapon.displayName} by {args.interactorObject.transform.name}");
             if (args.interactorObject is XRSocketInteractor) return;
             if (ReferenceEquals(weapon.Holder, this)) weapon.Holder = null;
+            weapon.TriggerHeld = false;
             haptics = null;
             ReleaseEject();
         }

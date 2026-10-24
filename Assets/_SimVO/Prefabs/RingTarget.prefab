@@ -164,6 +164,7 @@ MonoBehaviour:
   surface: 0
   audioSource: {fileID: 1795574689724683725}
   maxHoles: 40
+  showHoles: 1
   radius: 0.25
   rings: 10
 --- !u!82 &1795574689724683725

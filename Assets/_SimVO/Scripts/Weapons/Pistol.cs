@@ -47,6 +47,14 @@ namespace SimVO.Weapons
             {
                 socket.InsertNew(magazinePrefab);
             }
+            StartCoroutine(CockNextFrame());
+        }
+
+        IEnumerator CockNextFrame()
+        {
+            yield return null;
+            yield return null;
+            Cock();
         }
     }
 }

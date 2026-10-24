@@ -47,12 +47,15 @@ namespace SimVO.Weapons
             CurrentMagazine = null;
         }
 
+        Coroutine disable;
+
         public void Eject()
         {
             var magazine = CurrentMagazine;
             if (magazine == null) return;
             interactionManager.SelectExit((IXRSelectInteractor)this, (IXRSelectInteractable)magazine.Grab);
-            StartCoroutine(DisableBriefly(0.8f));
+            if (disable != null) StopCoroutine(disable);
+            disable = StartCoroutine(DisableBriefly(0.8f));
             var body = magazine.GetComponent<Rigidbody>();
             if (body != null) body.AddForce(-transform.up * ejectImpulse, ForceMode.Impulse);
             Play(SfxLibrary.MagOut);
@@ -60,6 +63,9 @@ namespace SimVO.Weapons
 
         public Magazine InsertNew(Magazine prefab)
         {
+            if (disable != null) StopCoroutine(disable);
+            disable = null;
+            socketActive = true;
             var anchor = attachTransform != null ? attachTransform : transform;
             var magazine = Instantiate(prefab, anchor.position, anchor.rotation);
             magazine.Refill();
@@ -69,8 +75,13 @@ namespace SimVO.Weapons
 
         IEnumerator SelectNextFrame(Magazine magazine)
         {
-            yield return null;
-            if (magazine != null && interactionManager != null)
+            var waited = 0f;
+            while (magazine != null && !IsHovering(magazine.Grab) && waited < 0.5f)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
+            if (magazine != null && interactionManager != null && !magazine.Grab.isSelected)
             {
                 interactionManager.SelectEnter((IXRSelectInteractor)this, (IXRSelectInteractable)magazine.Grab);
             }
@@ -81,11 +92,12 @@ namespace SimVO.Weapons
             socketActive = false;
             yield return new WaitForSeconds(seconds);
             socketActive = true;
+            disable = null;
         }
 
         void Play(AudioClip clip)
         {
-            if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
+            Sfx.Play(audioSource, clip);
         }
     }
 }

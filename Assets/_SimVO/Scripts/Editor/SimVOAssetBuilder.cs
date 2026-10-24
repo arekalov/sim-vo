@@ -19,12 +19,14 @@ namespace SimVO.EditorTools
         public const string ThirdParty = SimVOPaths.Root + "/ThirdParty";
         const string PbrDir = SimVOPaths.Materials + "/PBR";
 
-        public static Material Floor, Wall, Ceiling, Table, Rack, GunDark, TargetPaper, SilhouettePaper, TargetFrame, BulletHole, Panel, Button, Marker, Lane, Tracer, Dispenser, ShellRed, Brass, Sign;
+        public static Material Floor, Wall, Ceiling, Table, Rack, GunDark, TargetPaper, SilhouettePaper, TargetFrame, BulletHole, Panel, Button, Marker, Lane, Tracer, Dispenser, ShellRed, Brass, Sign, Clay, ClayDark, Hologram, ConsoleFace, DisplayGlass, StartRed, LampOff, LampGreen, LampRed, Mat, Sandbag, LaserMat, HologramScan, Duck, DuckBeak, ScopeLens, Reticle;
         public static Material ConcreteFloor, ConcreteWallLong, ConcreteWallShort, Plywood, WoodTable, MetalPlate;
         public static Material MatMakarov, MatShotgun, MatSniper, MatM4A1, MatLuger, MatGrease, MatAK47, MatAmmoBox, MatCagedLight, MatWallLamp, MatExtinguisher, MatToolbox;
         public static TMP_FontAsset Font;
         public static GameObject PistolPrefab, CarbinePrefab, ShotgunPrefab, MagazinePrefab, RifleMagazinePrefab, ShellPrefab, RingTargetPrefab, SilhouetteTargetPrefab,
-            BulletHolePrefab, HitPopupPrefab, ProjectilePrefab, PanelButtonPrefab, ControlPanelPrefab, ScoreboardPrefab, WeaponWallPrefab, DesktopRigPrefab, TargetCarrierPrefab, CagedLightPrefab, DispenserPrefab, ShellBoxPrefab;
+            BulletHolePrefab, HitPopupPrefab, ProjectilePrefab, PanelButtonPrefab, ControlPanelPrefab, ScoreboardPrefab, WeaponWallPrefab, DesktopRigPrefab, TargetCarrierPrefab, CagedLightPrefab, DispenserPrefab, ShellBoxPrefab,
+            GongTargetPrefab, ClayTargetPrefab, ClayFragmentPrefab, ClayThrowerPrefab, HologramTargetPrefab, BarricadePrefab, MenuButtonPrefab, MenuSmallButtonPrefab, MenuPanelPrefab,
+            DuckPrefab, DuckGalleryPrefab, M4Prefab, AkPrefab, LugerPrefab, SmgPrefab, M4MagazinePrefab, AkMagazinePrefab, LugerMagazinePrefab, SmgMagazinePrefab;
 
         public static void BuildAll()
         {
@@ -51,6 +53,10 @@ namespace SimVO.EditorTools
             PanelButtonPrefab = Load("PanelButton"); ControlPanelPrefab = Load("ControlPanel"); ScoreboardPrefab = Load("Scoreboard");
             WeaponWallPrefab = Load("WeaponWall"); DesktopRigPrefab = Load("DesktopRig"); TargetCarrierPrefab = Load("TargetCarrier");
             CagedLightPrefab = Load("CagedLight"); DispenserPrefab = Load("MagazineDispenser"); ShellBoxPrefab = Load("ShellBox");
+            GongTargetPrefab = Load("GongTarget"); ClayTargetPrefab = Load("ClayTarget"); ClayFragmentPrefab = Load("ClayFragment"); ClayThrowerPrefab = Load("ClayThrower");
+            HologramTargetPrefab = Load("HologramTarget"); BarricadePrefab = Load("CoverBarricade"); MenuButtonPrefab = Load("MenuButton"); MenuSmallButtonPrefab = Load("MenuSmallButton"); MenuPanelPrefab = Load("MenuPanel");
+            DuckPrefab = Load("DuckTarget"); DuckGalleryPrefab = Load("DuckGallery");
+            M4Prefab = Load("M4A1"); AkPrefab = Load("AK47"); LugerPrefab = Load("Luger"); SmgPrefab = Load("M3");
         }
 
         static GameObject Load(string name) => AssetDatabase.LoadAssetAtPath<GameObject>($"{SimVOPaths.Prefabs}/{name}.prefab");
@@ -86,7 +92,24 @@ namespace SimVO.EditorTools
             ShellRed = Lit("M_ShellRed", new Color(0.75f, 0.12f, 0.1f), 0f, 0.5f);
             Brass = Lit("M_Brass", new Color(0.85f, 0.65f, 0.25f), 0.9f, 0.75f);
             Sign = Lit("M_Sign", new Color(0.92f, 0.92f, 0.9f), 0f, 0.3f);
+            Clay = Lit("M_Clay", new Color(0.95f, 0.45f, 0.1f), 0f, 0.35f);
+            ClayDark = Lit("M_ClayDark", new Color(0.2f, 0.12f, 0.08f), 0f, 0.3f);
+            ConsoleFace = Lit("M_ConsoleFace", new Color(0.09f, 0.1f, 0.11f), 0.3f, 0.45f);
+            DisplayGlass = Lit("M_DisplayGlass", new Color(0.02f, 0.05f, 0.03f), 0.1f, 0.95f);
+            StartRed = Lit("M_StartRed", new Color(0.85f, 0.08f, 0.06f), 0f, 0.6f);
+            LampOff = Lit("M_LampOff", new Color(0.18f, 0.18f, 0.18f), 0f, 0.7f);
+            LampGreen = Lit("M_LampGreen", new Color(0.3f, 1f, 0.35f), 0f, 0.7f, null, new Color(0.3f, 1f, 0.35f) * 2.5f);
+            LampRed = Lit("M_LampRed", new Color(1f, 0.25f, 0.2f), 0f, 0.7f, null, new Color(1f, 0.25f, 0.2f) * 2.5f);
+            Mat = Lit("M_Mat", new Color(0.12f, 0.12f, 0.13f), 0f, 0.2f);
+            Duck = Lit("M_Duck", new Color(1f, 0.8f, 0.15f), 0.3f, 0.6f);
+            DuckBeak = Lit("M_DuckBeak", new Color(0.95f, 0.45f, 0.1f), 0.3f, 0.5f);
+            ScopeLens = Unlit("M_ScopeLens", Color.white);
+            ScopeLens.SetTexture("_BaseMap", ScopeRenderTexture());
+            Reticle = AlphaUnlit("M_Reticle", ReticleTexture(), new Color(0.05f, 0.05f, 0.05f, 1f));
+            Sandbag = Lit("M_Sandbag", new Color(0.6f, 0.52f, 0.36f), 0f, 0.15f);
+            Hologram = HologramMaterial();
             Tracer = Unlit("M_Tracer", new Color(1f, 0.85f, 0.4f, 1f));
+            LaserMat = Unlit("M_Laser", new Color(1f, 0.1f, 0.05f, 1f));
         }
 
         static Material Lit(string name, Color color, float metallic, float smoothness, Texture2D baseMap = null, Color? emission = null)
@@ -110,6 +133,138 @@ namespace SimVO.EditorTools
             }
             EditorUtility.SetDirty(material);
             return material;
+        }
+
+        static Material AlphaUnlit(string name, Texture2D map, Color color)
+        {
+            var material = Additive(name, map, color);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 10;
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
+        static Material Additive(string name, Texture2D map, Color color)
+        {
+            var path = $"{SimVOPaths.Materials}/{name}.mat";
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+                AssetDatabase.CreateAsset(material, path);
+            }
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 2f);
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetFloat("_Cull", 0f);
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.SetColor("_BaseColor", color);
+            material.SetTexture("_BaseMap", map);
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
+        static Material HologramMaterial()
+        {
+            HologramScan = Additive("M_HologramScan", ScanlineTexture(), new Color(0.35f, 0.9f, 1f, 0.35f));
+            return Additive("M_Hologram", HologramRingTexture(), new Color(0.35f, 0.9f, 1f, 1f));
+        }
+
+        public static RenderTexture ScopeRenderTexture()
+        {
+            var path = $"{SimVOPaths.Textures}/RT_Scope.renderTexture";
+            var existing = AssetDatabase.LoadAssetAtPath<RenderTexture>(path);
+            if (existing != null) return existing;
+            var rt = new RenderTexture(512, 512, 16, RenderTextureFormat.ARGB32) { name = "RT_Scope", antiAliasing = 1 };
+            AssetDatabase.CreateAsset(rt, path);
+            return rt;
+        }
+
+        static Texture2D ReticleTexture()
+        {
+            var path = $"{SimVOPaths.Textures}/T_Reticle.png";
+            var existing = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (existing != null) return existing;
+            const int size = 512;
+            var pixels = new Color32[size * size];
+            var c = size * 0.5f;
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+            {
+                var dx = x + 0.5f - c; var dy = y + 0.5f - c;
+                var d = Mathf.Sqrt(dx * dx + dy * dy);
+                var a = 0f;
+                if (d < c - 2f)
+                {
+                    var thick = d < 60f ? 1.2f : 4f;
+                    if (Mathf.Abs(dx) < thick || Mathf.Abs(dy) < thick) a = 1f;
+                    if (d < 3f) a = 1f;
+                    if (Mathf.Abs(d - 160f) < 1.2f) a = 0.8f;
+                }
+                if (d >= c - 10f && d < c) a = 1f;
+                pixels[y * size + x] = new Color32(0, 0, 0, (byte)(a * 255f));
+            }
+            return SavePng(pixels, size, size, path);
+        }
+
+        static Texture2D HologramRingTexture()
+        {
+            var path = $"{SimVOPaths.Textures}/T_HologramRings.png";
+            var existing = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (existing != null) return existing;
+            const int size = 1024;
+            const int rings = 10;
+            var radius = size * 0.5f * (0.25f / 0.3f);
+            var pixels = new Color32[size * size];
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+            {
+                var dx = x + 0.5f - size * 0.5f;
+                var dy = y + 0.5f - size * 0.5f;
+                var d = Mathf.Sqrt(dx * dx + dy * dy) / radius;
+                var a = 0f;
+                if (d <= 1.02f)
+                {
+                    var ringPos = d * rings;
+                    var frac = ringPos - Mathf.Floor(ringPos);
+                    var line = Mathf.Min(frac, 1f - frac) / (0.5f / rings * 0.6f);
+                    a = Mathf.Clamp01(1f - line) * 0.9f;
+                    if (d < 0.06f) a = 1f;
+                    a += 0.08f * (1f - d);
+                    var cross = Mathf.Min(Mathf.Abs(dx), Mathf.Abs(dy));
+                    if (cross < 1.5f && d < 1f) a = Mathf.Max(a, 0.5f);
+                }
+                var v = (byte)Mathf.Clamp(a * 255f, 0f, 255f);
+                pixels[y * size + x] = new Color32(255, 255, 255, v);
+            }
+            return SavePng(pixels, size, size, path);
+        }
+
+        static Texture2D ScanlineTexture()
+        {
+            var path = $"{SimVOPaths.Textures}/T_Scanlines.png";
+            var existing = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (existing != null) return existing;
+            const int size = 256;
+            var pixels = new Color32[size * size];
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+            {
+                var band = (y % 8) < 3 ? 1f : 0.15f;
+                var sweep = Mathf.Clamp01(1f - Mathf.Abs(y - size * 0.5f) / (size * 0.12f));
+                var a = Mathf.Clamp01(band * 0.5f + sweep * 0.6f);
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+            }
+            var tex = SavePng(pixels, size, size, path);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            importer.wrapMode = TextureWrapMode.Repeat;
+            importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
         static Material Unlit(string name, Color color)
@@ -356,14 +511,20 @@ namespace SimVO.EditorTools
         {
             var go = Empty(name, parent, position, euler);
             var tmp = go.AddComponent<TextMeshPro>();
-            tmp.font = Font;
-            tmp.text = text;
+            SetFontAndText(tmp, text);
             tmp.fontSize = size;
             tmp.alignment = alignment;
             tmp.color = color ?? Color.white;
             tmp.rectTransform.sizeDelta = rect;
             tmp.textWrappingMode = TextWrappingModes.Normal;
             return tmp;
+        }
+
+        /// <summary>TMP raises a global font-changed event when a dynamic atlas grows; stale listeners from destroyed temp objects throw inside it.</summary>
+        public static void SetFontAndText(TMP_Text tmp, string text)
+        {
+            try { tmp.font = Font; } catch (MissingReferenceException) { }
+            try { tmp.text = text; } catch (MissingReferenceException) { }
         }
 
         public static AudioSource Audio(GameObject go, float spatial = 1f)
@@ -409,15 +570,34 @@ namespace SimVO.EditorTools
             PistolPrefab = Save(SimVOWeaponBuilder.BuildPistol(MagazinePrefab, MatMakarov), "Pistol");
             CarbinePrefab = Save(SimVOWeaponBuilder.BuildCarbine(RifleMagazinePrefab, MatSniper), "Carbine");
             ShotgunPrefab = Save(SimVOWeaponBuilder.BuildShotgun(MatShotgun), "Shotgun");
+            M4MagazinePrefab = Save(SimVOWeaponBuilder.BuildMagazine("M4Magazine", "M4A1", "M4A1.fbx", 30, MatM4A1), "M4Magazine");
+            AkMagazinePrefab = Save(SimVOWeaponBuilder.BuildMagazine("AkMagazine", "AK47", "AK47.fbx", 30, MatAK47), "AkMagazine");
+            LugerMagazinePrefab = Save(SimVOWeaponBuilder.BuildMagazine("LugerMagazine", "Luger", "Luger.fbx", 8, MatLuger, "Clip", Vector3.zero), "LugerMagazine");
+            SmgMagazinePrefab = Save(SimVOWeaponBuilder.BuildMagazine("SmgMagazine", "Grease_Gun", "Grease_Gun.fbx", 30, MatGrease), "SmgMagazine");
+            M4Prefab = Save(SimVOWeaponBuilder.BuildGun(SimVOWeaponBuilder.M4Spec(M4MagazinePrefab, MatM4A1)), "M4A1");
+            AkPrefab = Save(SimVOWeaponBuilder.BuildGun(SimVOWeaponBuilder.AkSpec(AkMagazinePrefab, MatAK47)), "AK47");
+            LugerPrefab = Save(SimVOWeaponBuilder.BuildGun(SimVOWeaponBuilder.LugerSpec(LugerMagazinePrefab, MatLuger)), "Luger");
+            SmgPrefab = Save(SimVOWeaponBuilder.BuildGun(SimVOWeaponBuilder.SmgSpec(SmgMagazinePrefab, MatGrease)), "M3");
             RingTargetPrefab = Save(BuildRingTarget(), "RingTarget");
             SilhouetteTargetPrefab = Save(BuildSilhouetteTarget(), "SilhouetteTarget");
+            GongTargetPrefab = Save(SimVOTargetBuilder.BuildGong(), "GongTarget");
+            ClayFragmentPrefab = Save(SimVOTargetBuilder.BuildClayFragment(), "ClayFragment");
+            ClayTargetPrefab = Save(SimVOTargetBuilder.BuildClay(ClayFragmentPrefab), "ClayTarget");
+            ClayThrowerPrefab = Save(SimVOTargetBuilder.BuildThrower(ClayTargetPrefab), "ClayThrower");
+            HologramTargetPrefab = Save(SimVOTargetBuilder.BuildHologram(), "HologramTarget");
+            DuckPrefab = Save(SimVOTargetBuilder.BuildDuck(), "DuckTarget");
+            DuckGalleryPrefab = Save(SimVOTargetBuilder.BuildDuckGallery(DuckPrefab), "DuckGallery");
+            BarricadePrefab = Save(SimVOTargetBuilder.BuildBarricade(), "CoverBarricade");
             TargetCarrierPrefab = Save(BuildTargetCarrier(), "TargetCarrier");
             PanelButtonPrefab = Save(BuildPanelButton(), "PanelButton");
-            ControlPanelPrefab = Save(BuildControlPanel(), "ControlPanel");
+            ControlPanelPrefab = Save(SimVOUiBuilder.BuildControlPanel(), "ControlPanel");
+            MenuButtonPrefab = Save(SimVOUiBuilder.BuildMenuButton("MenuButton", 0.5f), "MenuButton");
+            MenuSmallButtonPrefab = Save(SimVOUiBuilder.BuildMenuButton("MenuSmallButton", 0.09f), "MenuSmallButton");
+            MenuPanelPrefab = Save(SimVOUiBuilder.BuildMenuPanel(MenuButtonPrefab, MenuSmallButtonPrefab), "MenuPanel");
             ScoreboardPrefab = Save(BuildScoreboard(), "Scoreboard");
             DispenserPrefab = Save(BuildDispenser("MagazineDispenser", MagazinePrefab, "МАГАЗИНЫ"), "MagazineDispenser");
             ShellBoxPrefab = Save(BuildDispenser("ShellBox", ShellPrefab, "ПАТРОНЫ 12к"), "ShellBox");
-            WeaponWallPrefab = Save(SimVOWeaponBuilder.BuildWeaponWall(PistolPrefab, ShotgunPrefab, CarbinePrefab), "WeaponWall");
+            WeaponWallPrefab = Save(SimVOWeaponBuilder.BuildWeaponWall(PistolPrefab, ShotgunPrefab, CarbinePrefab, M4Prefab, AkPrefab, LugerPrefab, SmgPrefab), "WeaponWall");
             CagedLightPrefab = Save(BuildCagedLight(), "CagedLight");
             DesktopRigPrefab = Save(BuildDesktopRig(), "DesktopRig");
         }
@@ -447,8 +627,7 @@ namespace SimVO.EditorTools
         {
             var go = new GameObject("HitPopup");
             var tmp = go.AddComponent<TextMeshPro>();
-            tmp.font = Font;
-            tmp.text = "+10";
+            SetFontAndText(tmp, "+10");
             tmp.fontSize = 1.4f;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
@@ -471,6 +650,7 @@ namespace SimVO.EditorTools
             collider.height = 0.066f;
             var grab = root.AddComponent<XRGrabInteractable>();
             grab.movementType = XRBaseInteractable.MovementType.Instantaneous;
+            grab.throwOnDetach = false;
             grab.useDynamicAttach = false;
             root.AddComponent<Shell>();
             root.AddComponent<DestroyWhenDropped>();
@@ -522,6 +702,7 @@ namespace SimVO.EditorTools
             Primitive(PrimitiveType.Cylinder, "RodR", frame.transform, new Vector3(0.2f, -0.65f, 0f), new Vector3(0.012f, 0.65f, 0.012f), Rack, default, false);
             Primitive(PrimitiveType.Cube, "Crossbar", frame.transform, new Vector3(0f, -1.3f, 0f), new Vector3(0.5f, 0.025f, 0.025f), Rack, default, false);
             var mount = Empty("TargetMount", frame.transform, new Vector3(0f, -1.64f, 0f));
+            mount.AddComponent<TargetMotion>();
             var carrier = root.AddComponent<TargetCarrier>();
             carrier.trolley = trolley.transform;
             carrier.frame = frame.transform;
@@ -540,32 +721,12 @@ namespace SimVO.EditorTools
             var cap = Primitive(PrimitiveType.Cube, "Cap", root.transform, new Vector3(0f, 0.0125f, 0f), new Vector3(0.125f, 0.025f, 0.085f), Button, default, false);
             var label = Text("Label", root.transform, new Vector3(0f, 0.027f, 0f), "Кнопка", 0.2f, new Vector2(0.12f, 0.08f), new Vector3(90f, 0f, 0f), new Color(0.1f, 0.1f, 0.1f));
             root.AddComponent<XRSimpleInteractable>();
+            root.AddComponent<UnityEngine.XR.Interaction.Toolkit.Filtering.XRPokeFilter>();
             var button = root.AddComponent<PanelButton>();
             button.label = label;
             button.cap = cap.transform;
             button.audioSource = Audio(root);
             return root;
-        }
-
-        static GameObject BuildControlPanel()
-        {
-            var root = new GameObject("ControlPanel");
-            Primitive(PrimitiveType.Cube, "Board", root.transform, Vector3.zero, new Vector3(0.64f, 0.025f, 0.34f), Panel);
-            Text("Title", root.transform, new Vector3(0f, 0.014f, 0.125f), "ПУЛЬТ ТИРА", 0.3f, new Vector2(0.6f, 0.06f), new Vector3(90f, 0f, 0f));
-            var panel = root.AddComponent<ControlPanel>();
-            panel.modeButton = PlaceButton(root.transform, "ModeButton", -0.225f);
-            panel.gameButton = PlaceButton(root.transform, "GameButton", -0.075f);
-            panel.targetButton = PlaceButton(root.transform, "TargetButton", 0.075f);
-            panel.startButton = PlaceButton(root.transform, "StartButton", 0.225f);
-            return root;
-        }
-
-        static PanelButton PlaceButton(Transform parent, string name, float x)
-        {
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(PanelButtonPrefab, parent);
-            instance.name = name;
-            instance.transform.localPosition = new Vector3(x, 0.0125f, -0.03f);
-            return instance.GetComponent<PanelButton>();
         }
 
         static GameObject BuildScoreboard()
@@ -640,7 +801,7 @@ namespace SimVO.EditorTools
             cam.fieldOfView = 70f;
             camGo.AddComponent<AudioListener>();
             UnityEngine.Rendering.Universal.CameraExtensions.GetUniversalAdditionalCameraData(cam);
-            var hand = Empty("HandAnchor", camGo.transform, new Vector3(0.2f, -0.17f, 0.42f));
+            var hand = Empty("HandAnchor", camGo.transform, new Vector3(0.14f, -0.16f, 0.42f));
             var crosshair = Text("Crosshair", camGo.transform, new Vector3(0f, 0f, 0.5f), "+", 0.3f, new Vector2(0.2f, 0.1f), default, new Color(1f, 1f, 1f, 0.8f));
             crosshair.gameObject.layer = SimVOLayers.IgnoreRaycast;
             var player = root.AddComponent<DesktopPlayer>();

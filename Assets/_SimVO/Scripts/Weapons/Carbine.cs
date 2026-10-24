@@ -6,7 +6,7 @@ namespace SimVO.Weapons
     /// <summary>Two-handed magazine-fed rifle. Same loading as the pistol, different ballistics and sound.</summary>
     public class Carbine : Pistol
     {
-        protected override AudioClip ShotClip => SfxLibrary.RifleShot;
+        protected override AudioClip ShotClip => OwnClip ?? SfxLibrary.RifleShot;
 
         void Reset()
         {

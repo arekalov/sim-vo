@@ -411,6 +411,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1718920598761013429}
+  - component: {fileID: 5155495500725476442}
   m_Layer: 0
   m_Name: TargetMount
   m_TagString: Untagged
@@ -433,6 +434,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3737101231350868211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5155495500725476442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082826104961661572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61256519e931246d49f5c5970f29e570, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimVO.Targets.TargetMotion
+  mode: 0
+  amplitude: 0.55
+  speed: 0.6
+  circleRadius: 0.32
+  circleSpeed: 0.35
 --- !u!1 &3746442970320272251
 GameObject:
   m_ObjectHideFlags: 0
