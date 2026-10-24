@@ -47,7 +47,7 @@ namespace SimVO.Weapons
             life += dt;
             if (life > maxLifetime)
             {
-                GameSession.Instance?.RegisterMiss();
+                RegisterMiss();
                 Despawn();
             }
         }
@@ -62,10 +62,17 @@ namespace SimVO.Weapons
             }
             else
             {
-                GameSession.Instance?.RegisterMiss();
+                RegisterMiss();
                 FxLibrary.Instance?.SpawnHole(hit.point, hit.normal, hit.collider.transform);
             }
             Despawn();
+        }
+
+        /// <summary>Single bullets break the combo on a miss; stray pellets of a shotgun pattern do not.</summary>
+        void RegisterMiss()
+        {
+            if (source != null && source.projectilesPerShot > 1) return;
+            GameSession.Instance?.RegisterMiss();
         }
 
         void Despawn()

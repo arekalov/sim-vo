@@ -48,6 +48,9 @@ namespace SimVO.Audio
             return Mathf.Sin(2f * Mathf.PI * note * t) * Envelope(local, 0.3f) * 0.5f;
         });
 
+        public static AudioClip MotorHum => Get("motor", 1.0f, (t, r) =>
+            (Mathf.Sin(2f * Mathf.PI * 55f * t) * 0.5f + Mathf.Sin(2f * Mathf.PI * 110f * t) * 0.25f + Noise(r) * 0.05f) * 0.35f);
+
         public static AudioClip ButtonClick => Get("button", 0.05f, (t, r) =>
             Mathf.Sin(2f * Mathf.PI * 1200f * t) * Decay(t, 80f) * 0.4f);
 

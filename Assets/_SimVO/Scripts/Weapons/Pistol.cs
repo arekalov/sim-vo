@@ -41,7 +41,7 @@ namespace SimVO.Weapons
             if (Magazine != null)
             {
                 Magazine.Refill();
-                Play(ProceduralSfx.MagIn);
+                Play(SfxLibrary.MagIn);
             }
             else if (magazinePrefab != null)
             {

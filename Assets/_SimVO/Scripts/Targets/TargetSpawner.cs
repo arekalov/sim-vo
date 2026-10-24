@@ -6,26 +6,29 @@ using UnityEngine;
 namespace SimVO.Targets
 {
     /// <summary>
-    /// Keeps one active target on a lane at 5/10/15 m. Each hit retires the target and raises the next one.
-    /// Outside a game a practice target stays on the first lane.
+    /// Runs the player's lane: hangs a target on the carrier, drives it to 5/10/15 m, and after each hit
+    /// flips the frame to swap paper and moves on to the next distance. Outside a game a practice target waits at 5 m.
     /// </summary>
     public class TargetSpawner : MonoBehaviour
     {
+        public TargetCarrier carrier;
         public Target ringTargetPrefab;
-        public List<Transform> lanes = new List<Transform>();
-        public float respawnDelay = 0.6f;
-        public float retireDuration = 0.3f;
+        public Target silhouetteTargetPrefab;
+        public List<float> distances = new List<float> { 5f, 10f, 15f };
+        public float practiceDistance = 5f;
+        public float swapDelay = 0.35f;
 
         Target active;
-        int laneIndex;
+        int distanceIndex;
         GameSession session;
-        Coroutine cycle;
+        bool busy;
 
         void Start()
         {
             session = GameSession.Instance;
             if (session != null) session.StateChanged += OnStateChanged;
-            SpawnAt(0);
+            Hang();
+            carrier.DriveTo(practiceDistance);
         }
 
         void OnDestroy()
@@ -33,69 +36,62 @@ namespace SimVO.Targets
             if (session != null) session.StateChanged -= OnStateChanged;
         }
 
+        Target Prefab => session != null && session.settings.targetKind == TargetKind.Silhouette && silhouetteTargetPrefab != null
+            ? silhouetteTargetPrefab
+            : ringTargetPrefab;
+
         void OnStateChanged()
         {
             if (session.State == SessionState.Running)
             {
-                laneIndex = 0;
-                Replace(0);
+                distanceIndex = 0;
+                StopAllCoroutines();
+                busy = false;
+                StartCoroutine(SwapAndDrive(distances[0]));
+            }
+            else if (session.State == SessionState.Finished)
+            {
+                StartCoroutine(ReturnHome());
             }
         }
 
-        void Replace(int lane)
+        void Hang()
         {
-            if (cycle != null) StopCoroutine(cycle);
             if (active != null) Destroy(active.gameObject);
-            active = null;
-            SpawnAt(lane);
-        }
-
-        void SpawnAt(int lane)
-        {
-            if (lanes.Count == 0 || ringTargetPrefab == null) return;
-            var anchor = lanes[Mathf.Clamp(lane, 0, lanes.Count - 1)];
-            active = Instantiate(ringTargetPrefab, anchor.position, anchor.rotation, transform);
+            var mount = carrier.targetMount != null ? carrier.targetMount : carrier.transform;
+            active = Instantiate(Prefab, mount.position, mount.rotation, mount);
             active.HitRegistered += OnHit;
-            StartCoroutine(PopIn(active.transform));
         }
 
         void OnHit(Target target, int points)
         {
-            if (target != active) return;
-            target.HitRegistered -= OnHit;
+            if (target != active || busy) return;
             if (session == null || session.State != SessionState.Running) return;
-            laneIndex = (laneIndex + 1) % lanes.Count;
-            cycle = StartCoroutine(Retire(target, laneIndex));
+            distanceIndex = (distanceIndex + 1) % distances.Count;
+            StartCoroutine(SwapAndDrive(distances[distanceIndex]));
         }
 
-        IEnumerator Retire(Target target, int nextLane)
+        IEnumerator SwapAndDrive(float distance)
         {
-            active = null;
-            var t = 0f;
-            var start = target.transform.localScale;
-            while (t < retireDuration && target != null)
-            {
-                t += Time.deltaTime;
-                target.transform.localScale = Vector3.Lerp(start, new Vector3(start.x, 0.01f, start.z), t / retireDuration);
-                yield return null;
-            }
-            if (target != null) Destroy(target.gameObject);
-            yield return new WaitForSeconds(respawnDelay);
-            SpawnAt(nextLane);
-            cycle = null;
+            busy = true;
+            yield return new WaitForSeconds(swapDelay);
+            yield return carrier.Flip(Hang);
+            var arrived = false;
+            carrier.DriveTo(distance, () => arrived = true);
+            while (!arrived) yield return null;
+            busy = false;
         }
 
-        IEnumerator PopIn(Transform target)
+        IEnumerator ReturnHome()
         {
-            var t = 0f;
-            var full = target.localScale;
-            while (t < 0.2f && target != null)
-            {
-                t += Time.deltaTime;
-                target.localScale = Vector3.Lerp(new Vector3(full.x, 0.01f, full.z), full, t / 0.2f);
-                yield return null;
-            }
-            if (target != null) target.localScale = full;
+            busy = true;
+            var arrived = false;
+            carrier.DriveTo(carrier.homeDistance, () => arrived = true);
+            while (!arrived) yield return null;
+            yield return new WaitForSeconds(2.5f);
+            yield return carrier.Flip(Hang);
+            carrier.DriveTo(practiceDistance);
+            busy = false;
         }
     }
 }

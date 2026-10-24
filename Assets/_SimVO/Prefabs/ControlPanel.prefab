@@ -145,7 +145,7 @@ Transform:
   - {fileID: 6164874134638127610}
   - {fileID: 3324277339429146951}
   - {fileID: 4757343580846252843}
-  - {fileID: 6710851719166459957}
+  - {fileID: 8053958209728672563}
   - {fileID: 3815629627299401949}
   - {fileID: 983179560885681518}
   m_Father: {fileID: 0}
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimVO.UI.ControlPanel
   modeButton: {fileID: 7062369097037128247}
-  gameButton: {fileID: 6710851719166459958}
+  gameButton: {fileID: 5747298871302468143}
   targetButton: {fileID: 1509901458888741313}
   startButton: {fileID: 3288504139315199090}
 --- !u!1 &6385286150865563400
@@ -550,12 +550,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c86a30fc8e6fa44c88fa08904fc23f43, type: 3}
---- !u!4 &6710851719166459957 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3667289388658422535, guid: c86a30fc8e6fa44c88fa08904fc23f43, type: 3}
-  m_PrefabInstance: {fileID: 6710851719166459956}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6710851719166459958 stripped
+--- !u!114 &5747298871302468143 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1360999451342156315, guid: c86a30fc8e6fa44c88fa08904fc23f43, type: 3}
   m_PrefabInstance: {fileID: 6710851719166459956}
@@ -566,6 +561,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db616370d582e4cd493902a8b5ad45da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimVO.UI.PanelButton
+--- !u!4 &8053958209728672563 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3667289388658422535, guid: c86a30fc8e6fa44c88fa08904fc23f43, type: 3}
+  m_PrefabInstance: {fileID: 6710851719166459956}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8133974321838690348
 PrefabInstance:
   m_ObjectHideFlags: 0

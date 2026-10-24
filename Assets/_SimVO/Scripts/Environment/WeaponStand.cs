@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SimVO.Environment
 {
-    /// <summary>Rack by the entrance. In VR weapons are simply grabbed; on desktop keys 1/2/3 take them.</summary>
+    /// <summary>Gun wall behind the shooter. In VR weapons are grabbed off their hooks; on desktop keys 1/2/3 take them.</summary>
     public class WeaponStand : MonoBehaviour
     {
         public List<Weapon> weapons = new List<Weapon>();

@@ -30,6 +30,8 @@ namespace SimVO.Weapons
 
         void OnDropped(SelectExitEventArgs args)
         {
+            var body = GetComponent<Rigidbody>();
+            if (body != null) body.isKinematic = false;
             if (pending != null) StopCoroutine(pending);
             pending = StartCoroutine(ReturnLater());
         }
@@ -50,6 +52,7 @@ namespace SimVO.Weapons
             {
                 body.linearVelocity = Vector3.zero;
                 body.angularVelocity = Vector3.zero;
+                body.isKinematic = true;
             }
         }
     }

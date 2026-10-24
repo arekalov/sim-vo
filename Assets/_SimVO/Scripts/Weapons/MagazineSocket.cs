@@ -36,7 +36,7 @@ namespace SimVO.Weapons
             if (magazine == null) return;
             CurrentMagazine = magazine;
             if (lockWhenInserted) magazine.Grab.interactionLayers = InsertedLayer;
-            Play(ProceduralSfx.MagIn);
+            Play(SfxLibrary.MagIn);
         }
 
         protected override void OnSelectExited(SelectExitEventArgs args)
@@ -55,7 +55,7 @@ namespace SimVO.Weapons
             StartCoroutine(DisableBriefly(0.8f));
             var body = magazine.GetComponent<Rigidbody>();
             if (body != null) body.AddForce(-transform.up * ejectImpulse, ForceMode.Impulse);
-            Play(ProceduralSfx.MagOut);
+            Play(SfxLibrary.MagOut);
         }
 
         public Magazine InsertNew(Magazine prefab)

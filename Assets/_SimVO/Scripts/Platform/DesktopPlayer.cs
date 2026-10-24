@@ -119,9 +119,13 @@ namespace SimVO.Platform
             var grab = weapon.GetComponent<XRGrabInteractable>();
             if (grab != null) grab.enabled = false;
             var body = weapon.GetComponent<Rigidbody>();
-            if (body != null) body.isKinematic = true;
+            if (body != null)
+            {
+                body.interpolation = RigidbodyInterpolation.None;
+                body.isKinematic = true;
+            }
             weapon.transform.SetParent(handAnchor, false);
-            weapon.transform.localPosition = Vector3.zero;
+            weapon.transform.localPosition = weapon.twoHanded ? new Vector3(-0.08f, -0.02f, -0.1f) : Vector3.zero;
             weapon.transform.localRotation = Quaternion.identity;
             weapon.Holder = this;
         }
